@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Library System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .action-card {
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-dialog {
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 1rem);
+            margin: 0 auto;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal.fade .modal-dialog {
+            transform: scale(0.95) translateY(-20px);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.7;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 1rem);
+            margin: 1.75rem auto;
+        }
+
+        .modal-xl {
+            max-width: 95vw;
+            /* Make modal wider */
+        }
+
+        .modal-content {
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5 id="welcomeMessage">Welcome</h5>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="#">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#" onclick="logout()">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <h2 class="mb-4">Dashboard</h2>
+
+                <div class="row g-4">
+                    <!-- Add Books Card -->
+                    <div class="col-md-4">
+                        <div class="card action-card" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                            <div class="card-body text-center">
+                                <i class="bi bi-plus-circle card-icon text-primary"></i>
+                                <h5 class="card-title">Add Books</h5>
+                                <p class="card-text">Add new books to the library</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- View History Card -->
+                    <div class="col-md-4">
+                        <div class="card action-card" onclick="viewBorrowHistory()">
+                            <div class="card-body text-center">
+                                <i class="bi bi-clock-history card-icon text-success"></i>
+                                <h5 class="card-title">Borrow History</h5>
+                                <p class="card-text">View book borrowing history</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Books Card -->
+                    <div class="col-md-4">
+                        <div class="card action-card" data-bs-toggle="modal" data-bs-target="#viewBooksModal">
+                            <div class="card-body text-center">
+                                <i class="bi bi-pencil-square card-icon text-warning"></i>
+                                <h5 class="card-title">Edit Books</h5>
+                                <p class="card-text">Manage existing books</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add Book Modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="author" name="author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" name="isbn" required
+                                placeholder="Enter 13 digits ISBN">
+                            <div class="invalid-feedback">
+                                ISBN must be exactly 13 digits
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required min="1"
+                                max="100" placeholder="Enter quantity (1-100)">
+                            <div class="invalid-feedback">
+                                Quantity must be between 1 and 100
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Book</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- View Books Modal -->
+    <div class="modal fade" id="viewBooksModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Manage Books</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover w-100">
+                            <thead>
+                                <tr>
+                                    <th width="35%">Title</th>
+                                    <th width="25%">Author</th>
+                                    <th width="15%">ISBN</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="15%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="booksTableBody">
+                                <!-- Books will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/addBook.js"></script>
+    <script src="js/viewBooks.js"></script>
+    <script>
+        function viewBorrowHistory() {
+            // Implementation for viewing borrow history
+            Swal.fire({
+                title: 'Coming Soon',
+                text: 'Borrow history feature is under development',
+                icon: 'info'
+            });
+        }
+        function logout() {
+            // Implementation for logout
+            fetch('php/logout.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        window.location.href = 'index.html';
+                    }
+                });
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const firstName = sessionStorage.getItem('firstName');
+            if (firstName) {
+                document.getElementById('welcomeMessage').textContent = 'Welcome, ' + firstName;
+            }
+        });
+    </script>
+</body>
+
+</html>
