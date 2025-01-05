@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = trim($_POST['email']);
         $password = $_POST['password'];
 
-        $sql = "SELECT UserId, FirstName, LastName, Email, Password FROM UserProfile WHERE Email = ? LIMIT 1";
+        $sql = "SELECT UserId, FirstName, LastName, Email, Password,Role FROM UserProfile WHERE Email = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -31,12 +31,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['first_name'] = $row['FirstName'];
                 $_SESSION['last_name'] = $row['LastName'];
                 $_SESSION['email'] = $row['Email'];
+                $_SESSION['role'] = $row['Role'];
                 
                 $response['status'] = 'success';
                 $response['message'] = 'Login successful!';
                 $response['user'] = array(
                     'firstName' => $row['FirstName'],
-                    'lastName' => $row['LastName']
+                    'lastName' => $row['LastName'],
+                    'role' => $row['Role']
                 );
             } else {
                 $response['message'] = 'Invalid email or password';

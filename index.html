@@ -173,6 +173,12 @@
                 <div class="modal-body">
                     <form id="registerForm" action="php/register.php" method="POST" onsubmit="return validateForm(event)">
                         <div class="mb-3">
+                            <label for="studentId" class="form-label">Student ID</label>
+                            <input type="text" class="form-control" id="studentId" name="studentId" required 
+                                   pattern="[0-9]+" title="Please enter a valid student ID (numbers only)">
+                            <div id="studentIdError" class="form-text"></div>
+                        </div>
+                        <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" name="firstName" required>
                             <div id="firstNameError" class="form-text"></div>

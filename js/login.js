@@ -58,13 +58,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (data.status === 'success') {
                     sessionStorage.setItem('firstName', data.user.firstName);
+                    sessionStorage.setItem('role', data.user.role);
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: data.message
                     }).then(() => {
                         loginModal.hide();
-                        window.location.href = 'dashboard.html';
+                        if (data.user.role === 'Admin') {
+                            window.location.href = 'dashboard.html';
+                        } else if ((data.user.role === 'Student')){
+                            window.location.href = 'student.html';
+                        }else  {
+                            window.location.href = 'admin.html';
+                        }
                     });
                 } else {
                     Swal.fire({

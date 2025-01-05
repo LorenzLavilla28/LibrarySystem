@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin Account - Library System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .main-content {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+
+        .content-panel {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(75, 108, 183, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="content-panel">
+            <h2 class="text-center mb-4">Create Account</h2>
+            <form id="adminRegisterForm">
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" required>
+                </div>
+                <div class="mb-3">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Student">Student</option>
+                    </select>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-custom">Create Account</button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="index.html" onclick="logout()" class="text-decoration-none">Exit</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userRole = sessionStorage.getItem('role');
+            if (userRole !== 'superadmin') {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('adminRegisterForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                console.log('Form submitted'); // Debug log
+
+                if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Passwords do not match!'
+                    });
+                    return;
+                }
+
+                const formData = new FormData(this);
+                // Let role come from select element instead of hardcoding
+                console.log('Role:', formData.get('role')); // Debug log
+
+                fetch('php/createAccountBySuperAdmin.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        console.log('Response:', response); // Debug log
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Data:', data); // Debug log
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Account created successfully!'
+                            }).then(() => {
+                                this.reset();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Failed to create account');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Failed to create account'
+                        });
+                    });
+            });
+        });
+
+        function logout() {
+            fetch('php/logout.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        sessionStorage.clear();
+                        window.location.href = 'index.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to logout. Please try again.'
+                    });
+                });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+
+</html>

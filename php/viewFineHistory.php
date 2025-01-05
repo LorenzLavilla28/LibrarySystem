@@ -1,22 +1,20 @@
 <?php
-ob_start(); // Start output buffering
 include __DIR__ . '/../config/databaseConnection.php';
-ob_clean(); // Clear any previous output
 
 header('Content-Type: application/json');
 $response = array();
 
 try {
-    $sql = "SELECT BookId, BookTitle, Author, ISBN, Quantity,Available FROM Books ORDER BY BookTitle";
+    $sql = "SELECT * FROM FineManagement ORDER BY DateOfPayment DESC";
     $result = $conn->query($sql);
     
-    $books = array();
+    $fines = array();
     while($row = $result->fetch_assoc()) {
-        $books[] = $row;
+        $fines[] = $row;
     }
     
     $response['status'] = 'success';
-    $response['books'] = $books;
+    $response['fines'] = $fines;
     
 } catch (Exception $e) {
     $response['status'] = 'error';
@@ -25,5 +23,4 @@ try {
 
 $conn->close();
 echo json_encode($response);
-exit;
 ?>

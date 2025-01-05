@@ -28,6 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $author = $_POST['author'];
         $isbn = trim($_POST['isbn']); // Clean ISBN input
         $quantity = $_POST['quantity'];
+        $available = $quantity; // Set Available equal to Quantity
 
         // Debug ISBN value
         error_log("Received ISBN: " . $isbn);
@@ -40,9 +41,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        $sql = "INSERT INTO Books (BookId, BookTitle, Author, ISBN, Quantity) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Books (BookId, BookTitle, Author, ISBN, Quantity, Available) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $bookId, $title, $author, $isbn, $quantity);
+        $stmt->bind_param("ssssii", $bookId, $title, $author, $isbn, $quantity, $available);
 
         if ($stmt->execute()) {
             $response['status'] = 'success';
