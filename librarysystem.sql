@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 05, 2025 at 01:43 PM
+-- Generation Time: Jan 17, 2025 at 08:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -31,19 +31,21 @@ CREATE TABLE `books` (
   `BookId` varchar(50) NOT NULL,
   `BookTitle` varchar(100) NOT NULL,
   `Author` varchar(255) NOT NULL,
-  `ISBN` varchar(13) NOT NULL,
+  `Accession` varchar(6) NOT NULL,
   `Quantity` int(100) NOT NULL,
-  `Available` int(100) NOT NULL
+  `Available` int(100) NOT NULL,
+  `IsFeatured` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `books`
 --
 
-INSERT INTO `books` (`BookId`, `BookTitle`, `Author`, `ISBN`, `Quantity`, `Available`) VALUES
-('ad5af5fc386f79f06d64', 'Wild Rift', 'Jadriene Lavilla', '0294923458327', 20, 20),
-('dd22f204106c0513e86a', 'Valorant', 'Jairuz Lavilla', '1231524323523', 23, 23),
-('2ca686a2b652e01e306d', 'Honor of Kings', 'Joshua Waje', '1312031023213', 1, 1);
+INSERT INTO `books` (`BookId`, `BookTitle`, `Author`, `Accession`, `Quantity`, `Available`, `IsFeatured`) VALUES
+('47229d02509e16f88570', 'Mineral', 'Jairuz Lavilla', '102030', 10, 10, 1),
+('ad5af5fc386f79f06d64', 'Wild Rift', 'Jadriene Lavilla', '029492', 20, 20, 1),
+('dd22f204106c0513e86a', 'Valorant', 'Jairuz Lavilla', '123152', 23, 22, 1),
+('dfbea854e47f93bcce74', 'Jollibee', 'Jadriene', '103045', 20, 21, 1);
 
 -- --------------------------------------------------------
 
@@ -58,6 +60,7 @@ CREATE TABLE `borrowhistory` (
   `BookBorrowed` varchar(50) NOT NULL,
   `DateBorrowed` date NOT NULL,
   `DateToReturn` date NOT NULL,
+  `DateReturned` date NOT NULL,
   `Status` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -85,7 +88,11 @@ CREATE TABLE `userprofile` (
   `StudentId` varchar(50) NOT NULL,
   `FirstName` varchar(20) NOT NULL,
   `LastName` varchar(20) NOT NULL,
+  `Grade` varchar(50) NOT NULL,
+  `Section` varchar(50) NOT NULL,
+  `Adviser` varchar(100) NOT NULL,
   `Email` varchar(50) NOT NULL,
+  `ContactNumber` varchar(10) NOT NULL,
   `Password` varchar(999) NOT NULL,
   `Role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -94,8 +101,8 @@ CREATE TABLE `userprofile` (
 -- Dumping data for table `userprofile`
 --
 
-INSERT INTO `userprofile` (`UserId`, `StudentId`, `FirstName`, `LastName`, `Email`, `Password`, `Role`) VALUES
-('6c8ddb37dcd4b438c70a', '43434343', 'superadmin', 'superadmin', 'superadmin@gmail.com', '$2y$10$04tgLuBYd.J/37EJRdamgurD39r9hODAjmANn3YI6lx39AMPMOkVC', 'superadmin');
+INSERT INTO `userprofile` (`UserId`, `StudentId`, `FirstName`, `LastName`, `Grade`, `Section`, `Adviser`, `Email`, `ContactNumber`, `Password`, `Role`) VALUES
+('6ff6696f6cf1c0f01609', '10239945', 'superadmin', 'superadmin', '', '', '', 'superadmin@gmail.com', '', '$2y$10$Rd1JgeMEB.NxYL4Gn8wWV.qGnZsNQ/87VVbcWGLQszuycdQoFZVSS', 'superadmin');
 
 --
 -- Indexes for dumped tables
@@ -105,7 +112,7 @@ INSERT INTO `userprofile` (`UserId`, `StudentId`, `FirstName`, `LastName`, `Emai
 -- Indexes for table `books`
 --
 ALTER TABLE `books`
-  ADD UNIQUE KEY `ISBN` (`ISBN`);
+  ADD PRIMARY KEY (`BookId`);
 
 --
 -- Indexes for table `borrowhistory`
