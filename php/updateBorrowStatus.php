@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $bookId = $row['BookBorrowed'];
         
         // Update BorrowHistory status
-        $sqlUpdate = "UPDATE BorrowHistory SET Status = 'Returned' WHERE TransactionId = ?";
+        $sqlUpdate = "UPDATE BorrowHistory SET Status = 'Returned', DateReturned = NOW() WHERE TransactionId = ?";
         $stmtUpdate = $conn->prepare($sqlUpdate);
         $stmtUpdate->bind_param("s", $transactionId);
         

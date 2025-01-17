@@ -243,7 +243,8 @@
                         <!-- Update table container -->
                         <div class="table-responsive">
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="searchBooks" placeholder="Search by title, author, or accession number...">
+                                <input type="text" class="form-control" id="searchBooks"
+                                    placeholder="Search by title, author, or accession number...">
                             </div>
                             <table class="table table-striped table-hover">
                                 <thead>
@@ -438,12 +439,13 @@
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th style="width: 15%">Borrower Name</th>
-                                        <th style="width: 15%">Book Borrowed</th>
-                                        <th style="width: 15%">Date Borrowed</th>
-                                        <th style="width: 15%">Date To Return</th>
-                                        <th style="width: 10%">Status</th>
-                                        <th style="width: 15%">Actions</th>
+                                        <th class="text-center" style="width: 40px;"></th>
+                                        <th>Borrower Name</th>
+                                        <th>Book Title</th>
+                                        <th>Date Borrowed</th>
+                                        <th>Date to Return</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="historyTableBody">
@@ -463,6 +465,7 @@
                                 <thead>
                                     <tr>
                                         <th>Transaction ID</th>
+                                        <th>Borrower Name</th>
                                         <th>Fine Amount</th>
                                         <th>Amount Paid</th>
                                         <th>Payment Date</th>
@@ -476,7 +479,49 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- User Profile Modal -->
+                <div class="modal fade" id="userProfileModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">User Profile</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Existing Fields -->
+                                <div class="mb-3">
+                                    <label class="fw-bold">Student ID:</label>
+                                    <p id="userStudentId"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Full Name:</label>
+                                    <p id="userFullName"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Email:</label>
+                                    <p id="userEmail"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Contact Number:</label>
+                                    <p id="userContactNumber"></p>
+                                </div>
+                                <!-- New Fields -->
+                                <div class="mb-3">
+                                    <label class="fw-bold">Grade:</label>
+                                    <p id="userGrade"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Section:</label>
+                                    <p id="userSection"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Adviser:</label>
+                                    <p id="userAdviser"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Fine Details Modal -->
                 <div class="modal fade" id="fineDetailsModal" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
@@ -505,6 +550,10 @@
                                 <div class="mb-3">
                                     <label class="fw-bold">Date To Return:</label>
                                     <p id="fineDetailDateToReturn"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="fw-bold">Date Returned:</label>
+                                    <p id="fineDetailDateReturned"></p>
                                 </div>
                                 <div class="mb-3">
                                     <label class="fw-bold">Fine Amount:</label>
@@ -722,23 +771,20 @@
             fetch(`php/getBook.php?id=${bookId}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'success') {
+                    console.log('Book data:', data); // Debug log
+                    if (data.status === 'success' && data.book) {
                         // Populate form fields
                         document.getElementById('editBookId').value = data.book.BookId;
                         document.getElementById('editTitle').value = data.book.BookTitle;
                         document.getElementById('editAuthor').value = data.book.Author;
-                        document.getElementById('editISBN').value = data.book.ISBN;
+                        document.getElementById('editAccession').value = data.book.Accession; // Changed from editISBN
                         document.getElementById('editQuantity').value = data.book.Quantity;
 
                         // Show modal
                         const editModal = new bootstrap.Modal(document.getElementById('editBookModal'));
                         editModal.show();
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: data.message || 'Failed to load book details'
-                        });
+                        throw new Error(data.message || 'Failed to load book details');
                     }
                 })
                 .catch(error => {
@@ -746,7 +792,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Failed to load book details'
+                        text: error.message || 'Failed to load book details'
                     });
                 });
         }
@@ -883,6 +929,7 @@
                             tableBody.insertAdjacentHTML('beforeend', `
                         <tr>
                             <td>${fine.TransactionId}</td>
+                            <td>${fine.BorrowerFirstName} ${fine.BorrowerLastName}</td>
                             <td>₱${parseFloat(fine.FineCost).toFixed(2)}</td>
                             <td>₱${parseFloat(fine.FinePaid).toFixed(2)}</td>
                             <td>${new Date(fine.DateOfPayment).toLocaleDateString()}</td>
@@ -898,7 +945,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load fine history</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load fine history</td></tr>';
                 });
         }
 
@@ -938,10 +985,10 @@
 
         function manageTransaction(transactionId) {
             const row = document.querySelector(`button[onclick="manageTransaction('${transactionId}')"]`).closest('tr');
-            const returnDate = new Date(row.children[3].textContent);
+            const returnDate = new Date(row.children[4].textContent);
             const currentDate = new Date();
             const daysOverdue = Math.max(0, Math.floor((currentDate - returnDate) / (1000 * 60 * 60 * 24)));
-            const fine = daysOverdue * 20;
+            const fine = daysOverdue * 10;
 
             if (daysOverdue > 0) {
                 // Show fine payment modal for overdue books
@@ -1103,6 +1150,8 @@
                             new Date(details.DateBorrowed).toLocaleDateString();
                         document.getElementById('fineDetailDateToReturn').textContent =
                             new Date(details.DateToReturn).toLocaleDateString();
+                        document.getElementById('fineDetailDateReturned').textContent =
+                            new Date(details.DateReturned).toLocaleDateString();
                         document.getElementById('fineDetailFineCost').textContent =
                             `₱${parseFloat(details.FineCost).toFixed(2)}`;
                         document.getElementById('fineDetailFinePaid').textContent =
@@ -1152,9 +1201,25 @@
             const searchTerm = document.getElementById('searchBorrower').value.toLowerCase();
             const filteredHistory = borrowHistoryData.filter(record => {
                 const fullName = `${record.BorrowerFirstName} ${record.BorrowerLastName}`.toLowerCase();
-                return fullName.includes(searchTerm);
+                const bookTitle = record.BookBorrowed.toLowerCase();
+                return fullName.includes(searchTerm) || bookTitle.includes(searchTerm);
             });
             displayBorrowHistory(filteredHistory);
+        }
+
+        // Update placeholder text for search input
+        document.getElementById('searchBorrower').placeholder = 'Search by borrower name or book title...';
+        function isOverdue(dateToReturn) {
+            const returnDateParts = dateToReturn.split('-');
+            const returnDate = new Date(returnDateParts[0], returnDateParts[1] - 1, returnDateParts[2]);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Ignore time
+
+            console.log('Return Date:', returnDate.toDateString());
+            console.log('Today:', today.toDateString());
+
+            return today > returnDate;
         }
 
         function displayBorrowHistory(records) {
@@ -1162,15 +1227,42 @@
             tableBody.innerHTML = '';
 
             records.forEach(record => {
-                const statusClass = record.Status === 'Returned' ? 'text-success' : 'text-danger';
-                const actionButton = record.Status !== 'Returned' ?
-                    `<button class="btn btn-success btn-sm" onclick="manageTransaction('${record.TransactionId}')">
-                <i class="bi bi-check-circle"></i> Returned
-            </button>` : '';
+                let statusClass, actionButton;
+
+                // Determine status class
+                switch (record.Status) {
+                    case 'Returned':
+                        statusClass = 'text-success';
+                        actionButton = '';
+                        break;
+                    case 'Not Yet Released':
+                        statusClass = 'text-warning';
+                        actionButton = `
+                    <button class="btn btn-warning btn-sm" onclick="releaseBook('${record.TransactionId}')">
+                        <i class="bi bi-box-arrow-right"></i> Release
+                    </button>`;
+                        break;
+                    default:
+                        statusClass = 'text-danger';
+                        actionButton = `
+                    <button class="btn btn-success btn-sm" onclick="manageTransaction('${record.TransactionId}')">
+                        <i class="bi bi-check-circle"></i> Returned
+                    </button>`;
+                }
+
+                const isBookOverdue = record.Status !== 'Returned' && isOverdue(record.DateToReturn);
+                const overdueIcon = isBookOverdue ?
+                    '<i class="bi bi-exclamation-circle-fill text-danger" title="Overdue"></i>' : '';
 
                 tableBody.insertAdjacentHTML('beforeend', `
-            <tr>
-                <td>${record.BorrowerFirstName} ${record.BorrowerLastName}</td>
+            <tr data-transaction-id="${record.TransactionId}">
+                <td class="text-center" style="width: 40px;">${overdueIcon}</td>
+                <td>
+                    <a href="#" onclick="viewUserProfile('${record.BorrowerFirstName}', '${record.BorrowerLastName}'); return false;" 
+                       class="text-primary" style="text-decoration: none;">
+                        ${record.BorrowerFirstName} ${record.BorrowerLastName}
+                    </a>
+                </td>
                 <td>${record.BookBorrowed}</td>
                 <td>${new Date(record.DateBorrowed).toLocaleDateString()}</td>
                 <td>${new Date(record.DateToReturn).toLocaleDateString()}</td>
@@ -1179,6 +1271,92 @@
             </tr>
         `);
             });
+        }
+        function releaseBook(transactionId) {
+            // Show confirmation dialog
+            Swal.fire({
+                title: 'Release Book',
+                text: 'Are you sure you want to release this book?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ffc107',
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: 'Yes, release it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('php/releaseBook.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ transactionId })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // Update row dynamically
+                                const row = document.querySelector(`tr[data-transaction-id="${transactionId}"]`);
+                                const statusCell = row.querySelector('td:nth-child(6) span');
+                                const actionCell = row.querySelector('td:last-child');
+
+                                // Update status and button
+                                statusCell.textContent = 'Not Yet Returned';
+                                statusCell.className = 'text-danger fw-bold';
+                                actionCell.innerHTML = `
+                        <button class="btn btn-success btn-sm" onclick="manageTransaction('${transactionId}')">
+                            <i class="bi bi-check-circle"></i> Returned
+                        </button>`;
+
+                                Swal.fire(
+                                    'Released!',
+                                    'The book has been released successfully.',
+                                    'success'
+                                );
+                            } else {
+                                throw new Error(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.message || 'Failed to release book'
+                            });
+                        });
+                }
+            });
+        }
+        function viewUserProfile(firstName, lastName) {
+            fetch('php/getUserByName.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ firstName, lastName })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('userStudentId').textContent = data.user.StudentId;
+                        document.getElementById('userFullName').textContent = `${data.user.FirstName} ${data.user.LastName}`;
+                        document.getElementById('userEmail').textContent = data.user.Email;
+                        document.getElementById('userContactNumber').textContent = data.user.ContactNumber;
+                        document.getElementById('userGrade').textContent = data.user.Grade;
+                        document.getElementById('userSection').textContent = data.user.Section;
+                        document.getElementById('userAdviser').textContent = data.user.Adviser;
+                        const modal = new bootstrap.Modal(document.getElementById('userProfileModal'));
+                        modal.show();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load user profile'
+                    });
+                });
         }
 
         function editProfile() {
@@ -1283,6 +1461,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/dist/date-fns.min.js"></script>
 </body>
 
 </html>

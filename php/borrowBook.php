@@ -1,18 +1,23 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-session_start();
-
 header('Content-Type: application/json');
 $response = array('status' => 'error', 'message' => 'Unknown error occurred');
 
 try {
-    if (!isset($_SESSION['user_id'], $_POST['bookId'], $_POST['dateBorrowed'], $_POST['dateReturn'])) {
+    if (!isset($_POST['userId'], $_POST['bookId'], $_POST['dateBorrowed'], $_POST['dateReturn'])) {
         throw new Exception('Missing required data');
     }
 
-    // Get user details from session
-    $firstName = $_SESSION['first_name'];
-    $lastName = $_SESSION['last_name'];
+    // Get user details from UserProfile
+    $userSql = "SELECT FirstName, LastName FROM UserProfile WHERE UserId = ?";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bind_param("s", $_POST['userId']);
+    $userStmt->execute();
+    $userResult = $userStmt->get_result();
+    $user = $userResult->fetch_assoc();
+
+    $firstName = $user['FirstName'];
+    $lastName = $user['LastName'];
     $bookId = $_POST['bookId'];
     $dateBorrowed = $_POST['dateBorrowed'];
     $dateReturn = $_POST['dateReturn'];
@@ -26,7 +31,7 @@ try {
     // Insert borrow record
     $sql = "INSERT INTO BorrowHistory (TransactionId, BorrowerFirstName, BorrowerLastName, 
             BookBorrowed, DateBorrowed, DateToReturn, Status) 
-            VALUES (?, ?, ?, ?, ?, ?, 'Not Yet Returned')";
+            VALUES (?, ?, ?, ?, ?, ?, 'Not Yet Released')";
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssss", 

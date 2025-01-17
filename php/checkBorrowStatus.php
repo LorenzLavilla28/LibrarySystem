@@ -1,18 +1,27 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-session_start();
-
 header('Content-Type: application/json');
-$response = array('status' => 'error', 'message' => 'Unknown error occurred');
+
+$response = array('status' => 'error', 'message' => 'Invalid request');
 
 try {
-    if (!isset($_SESSION['first_name'], $_SESSION['last_name'], $_GET['bookId'])) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    if (!isset($data['userId'], $data['bookId'])) {
         throw new Exception('Missing required data');
     }
 
-    $firstName = $_SESSION['first_name'];
-    $lastName = $_SESSION['last_name'];
-    $bookId = $_GET['bookId'];
+    // Get user details from UserProfile
+    $userSql = "SELECT FirstName, LastName FROM UserProfile WHERE UserId = ?";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bind_param("s", $data['userId']);
+    $userStmt->execute();
+    $userResult = $userStmt->get_result();
+    $user = $userResult->fetch_assoc();
 
     // Check if user has unreturned copy of this book
     $sql = "SELECT bh.*, b.BookTitle 
@@ -21,10 +30,11 @@ try {
             WHERE bh.BorrowerFirstName = ? 
             AND bh.BorrowerLastName = ? 
             AND bh.BookBorrowed = ? 
-            AND bh.Status = 'Not Yet Returned'";
+            AND bh.Status = 'Not Yet Returned'
+            OR bh.Status = 'Not Yet Released'";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $firstName, $lastName, $bookId);
+    $stmt->bind_param("sss", $user['FirstName'], $user['LastName'], $data['bookId']);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -34,12 +44,14 @@ try {
         $response['message'] = "Please return {$book['BookTitle']} first before borrowing the same book";
     } else {
         $response['status'] = 'success';
+        $response['message'] = 'You can borrow this book';
     }
+
+    $stmt->close();
 
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
 }
 
-$conn->close();
 echo json_encode($response);
 ?>

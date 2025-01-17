@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let isEmailValid = false;
     let isPasswordValid = false;
     let isPasswordMatch = false;
+    const registerForm = document.getElementById('registerForm');
+    
 
     // Password criteria
     const passwordCriteria = {
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.insertAdjacentHTML('afterend', feedbackHtml);
             }
             
-            toggleSubmitButton();
+            toggleSubmitButton();aa
         }, 50);
         
         // Handle confirm password check
@@ -199,7 +201,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle form submission
     document.getElementById('registerForm').addEventListener('submit', function(event) {
         event.preventDefault();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
         
+        if (password !== confirmPassword || !isPasswordMatch) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Password Mismatch',
+                text: 'Passwords do not match. Please try again.'
+            });
+            return false;
+        }
         const formData = new FormData(this);
         
         fetch('php/register.php', {

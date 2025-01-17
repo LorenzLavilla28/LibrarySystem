@@ -5,7 +5,11 @@ header('Content-Type: application/json');
 $response = array();
 
 try {
-    $sql = "SELECT * FROM FineManagement ORDER BY DateOfPayment DESC";
+    $sql = "SELECT fm.*, bh.BorrowerFirstName, bh.BorrowerLastName 
+            FROM FineManagement fm
+            JOIN BorrowHistory bh ON fm.TransactionId = bh.TransactionId 
+            ORDER BY fm.DateOfPayment DESC";
+    
     $result = $conn->query($sql);
     
     $fines = array();

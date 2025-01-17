@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Update borrow status
-        $updateSql = "UPDATE BorrowHistory SET Status = 'Returned' WHERE TransactionId = ?";
+        $updateSql = "UPDATE BorrowHistory SET Status = 'Returned', DateReturned = NOW() WHERE TransactionId = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bind_param("s", $transactionId);
         

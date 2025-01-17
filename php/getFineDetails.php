@@ -8,12 +8,12 @@ try {
     $transactionId = $_GET['id'];
     
     $sql = "SELECT f.TransactionId, f.FineCost, f.FinePaid, f.DateOfPayment,
-            bh.BorrowerFirstName, bh.BorrowerLastName, bh.DateBorrowed, 
-            bh.DateToReturn, bh.Status, b.BookTitle
-            FROM FineManagement f
-            JOIN BorrowHistory bh ON f.TransactionId = bh.TransactionId
-            JOIN Books b ON b.BookId = bh.BookBorrowed
-            WHERE f.TransactionId = ?";
+        bh.BorrowerFirstName, bh.BorrowerLastName, bh.DateBorrowed, 
+        bh.DateToReturn, bh.DateReturned, bh.Status, b.BookTitle
+        FROM FineManagement f
+        JOIN BorrowHistory bh ON f.TransactionId = bh.TransactionId
+        JOIN Books b ON b.BookId = bh.BookBorrowed
+        WHERE f.TransactionId = ?";
             
     if($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("s", $transactionId);

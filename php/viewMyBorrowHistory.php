@@ -1,17 +1,22 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-session_start();
-
 header('Content-Type: application/json');
 $response = array('status' => 'error', 'message' => 'Unknown error occurred');
 
 try {
-    if (!isset($_SESSION['first_name'], $_SESSION['last_name'])) {
-        throw new Exception('User not logged in');
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    if (!isset($data['userId'])) {
+        throw new Exception('User ID not provided');
     }
 
-    $firstName = $_SESSION['first_name'];
-    $lastName = $_SESSION['last_name'];
+    // Get user details from UserProfile
+    $userSql = "SELECT FirstName, LastName FROM UserProfile WHERE UserId = ?";
+    $userStmt = $conn->prepare($userSql);
+    $userStmt->bind_param("s", $data['userId']);
+    $userStmt->execute();
+    $userResult = $userStmt->get_result();
+    $user = $userResult->fetch_assoc();
 
     $sql = "SELECT bh.*, b.BookTitle 
             FROM BorrowHistory bh
@@ -20,13 +25,13 @@ try {
             ORDER BY DateBorrowed DESC";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $firstName, $lastName);
+    $stmt->bind_param("ss", $user['FirstName'], $user['LastName']);
     $stmt->execute();
     $result = $stmt->get_result();
 
     $history = array();
     while ($row = $result->fetch_assoc()) {
-        $row['BookBorrowed'] = $row['BookTitle']; // Replace BookId with BookTitle
+        $row['BookBorrowed'] = $row['BookTitle'];
         $history[] = $row;
     }
 
@@ -37,6 +42,5 @@ try {
     $response['message'] = $e->getMessage();
 }
 
-$conn->close();
 echo json_encode($response);
 ?>

@@ -8,14 +8,300 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        .about-section {
-            min-height: 100vh;
-            /* Full viewport height */
-            padding: 80px 0;
-            /* Matching padding */
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: #2c3e50;
+        .feature-card {
+            border: none;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-gradient-primary {
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
             position: relative;
+        }
+
+        .feature-gradient-secondary {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            position: relative;
+        }
+
+        .icon-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+        }
+
+        .icon-container i {
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .icon-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .card-overlay {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .card-overlay i {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 2rem;
+            transform: translate(-30%, -30%);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card:hover .card-overlay {
+            transform: scale(1.2);
+        }
+
+        .floating-animation {
+            display: inline-block;
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-text-wrapper {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #fff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .decorative-line {
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: #ffd700;
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .animate-text {
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .animate-text-delay {
+            animation: fadeInUp 1s ease-out 0.3s backwards;
+        }
+
+        .shine-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: none;
+            background: linear-gradient(45deg, #ffc107, #ff9800);
+        }
+
+        .shine-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+        }
+
+        .shine-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .shine-button:hover::after {
+            animation: shine 1s;
+            opacity: 1;
+        }
+
+        @keyframes shine {
+            to {
+                transform: rotate(45deg) translate(100%, 100%);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .about-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-wrapper i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background: #007bff;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: calc(50% - 30px);
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: auto;
+        }
+
+        .counter {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 1rem 0;
         }
 
         .feature {
@@ -287,12 +573,21 @@
         <div class="container" style="position: relative; z-index: 2;">
             <div class="row align-items-center">
                 <div class="col-md-8 mx-auto text-center">
-                    <h1 class="display-4 fw-bold mb-4">Welcome to Our Library</h1>
-                    <p class="lead mb-4">Discover our extensive collection of books and resources</p>
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="button" class="btn btn-warning btn-lg px-4" onclick="goToDashboard()">
-                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
-                        </button>
+                    <div class="welcome-text-wrapper">
+                        <h1 class="display-4 fw-bold mb-4 text-gradient animate-text">
+                            Welcome to Our Library
+                            <span class="decorative-line"></span>
+                        </h1>
+                        <p class="lead mb-4 text-white animate-text-delay">
+                            Discover our extensive collection of books and resources
+                            <i class="bi bi-book-half ms-2 text-warning"></i>
+                        </p>
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <button type="button" class="btn btn-warning btn-lg px-4 shine-button"
+                                onclick="goToDashboard()">
+                                <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -309,11 +604,16 @@
                 <!-- Featured Books Button -->
                 <div class="col-md-6">
                     <div class="feature-card card h-100" onclick="scrollToFeatured()">
-                        <div class="card-body text-center">
-                            <i class="bi bi-star text-warning floating-animation"
-                                style="font-size: 3rem; display: inline-block;"></i>
-                            <h3 class="mt-3">Featured Books</h3>
-                            <p>Explore our featured collection of books</p>
+                        <div class="card-body text-center feature-gradient-primary">
+                            <div class="icon-container">
+                                <i class="bi bi-star floating-animation"></i>
+                                <div class="icon-background"></div>
+                            </div>
+                            <h3 class="mt-4 text-white">Featured Books</h3>
+                            <p class="text-white-50">Explore our featured collection of books</p>
+                            <div class="card-overlay">
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -321,11 +621,16 @@
                 <!-- About Us Button -->
                 <div class="col-md-6">
                     <div class="feature-card card h-100" onclick="scrollToAbout()">
-                        <div class="card-body text-center">
-                            <i class="bi bi-info-circle text-primary floating-animation"
-                                style="font-size: 3rem; display: inline-block;"></i>
-                            <h3 class="mt-3">About Us</h3>
-                            <p>Learn more about our library and services</p>
+                        <div class="card-body text-center feature-gradient-secondary">
+                            <div class="icon-container">
+                                <i class="bi bi-info-circle floating-animation"></i>
+                                <div class="icon-background"></div>
+                            </div>
+                            <h3 class="mt-4 text-white">About Us</h3>
+                            <p class="text-white-50">Learn more about our library and services</p>
+                            <div class="card-overlay">
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -345,34 +650,95 @@
 
     <div id="about-us" class="about-section py-5">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card shadow-lg">
+            <!-- Hero Section -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-10">
+                    <div class="card hero-card shadow-lg border-0">
                         <div class="card-body p-5">
-                            <h2 class="text-center mb-4">About Our Library</h2>
-                            <div class="text-center mb-4">
-                                <i class="bi bi-book-half text-primary" style="font-size: 3rem;"></i>
-                            </div>
-                            <p class="lead text-center mb-4">
-                                Welcome to our modern library system, where knowledge meets technology.
-                            </p>
-                            <div class="row g-4">
+                            <div class="row align-items-center">
                                 <div class="col-md-6">
-                                    <div class="feature p-3 text-center">
-                                        <i class="bi bi-collection text-primary mb-3" style="font-size: 2rem;"></i>
-                                        <h4>Vast Collection</h4>
-                                        <p>Access thousands of books across various genres and subjects.</p>
+                                    <h2 class="display-4 fw-bold mb-4">School Library</h2>
+                                    <p class="lead text-muted">Supporting academic excellence and lifelong learning in
+                                        our community.</p>
+                                    <hr class="my-4">
+                                    <div class="d-flex gap-3">
+                                        <button class="btn btn-primary">
+                                            <i class="bi bi-journal-text me-2"></i>Study Guides
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="bi bi-calendar3 me-2"></i>Study Hours
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="feature p-3 text-center">
-                                        <i class="bi bi-laptop text-primary mb-3" style="font-size: 2rem;"></i>
-                                        <h4>Digital Access</h4>
-                                        <p>Easy online book management and digital resources.</p>
-                                    </div>
+                                    <img src="https://documents.pse.com.ph/wp-content/uploads/sites/15/2023/09/4J1A4514-1-scaled.jpg"
+                                        class="img-fluid floating-animation" alt="School Library">
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4">
+                        <i class="bi bi-book text-primary display-4"></i>
+                        <h3 class="counter">5,000+</h3>
+                        <p>Academic Books</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4">
+                        <i class="bi bi-mortarboard text-success display-4"></i>
+                        <h3 class="counter">1,200+</h3>
+                        <p>Student Members</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4">
+                        <i class="bi bi-laptop text-info display-4"></i>
+                        <h3 class="counter">50+</h3>
+                        <p>Study Computers</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card text-center p-4">
+                        <i class="bi bi-people text-warning display-4"></i>
+                        <h3 class="counter">4</h3>
+                        <p>Study Rooms</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <h4>Academic Resources</h4>
+                        <p>Textbooks, reference materials, and academic journals for all subjects.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-person-workspace"></i>
+                        </div>
+                        <h4>Study Spaces</h4>
+                        <p>Quiet study areas, group rooms, and computer stations.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-printer"></i>
+                        </div>
+                        <h4>Student Services</h4>
+                        <p>Printing, scanning, and research assistance available.</p>
                     </div>
                 </div>
             </div>
