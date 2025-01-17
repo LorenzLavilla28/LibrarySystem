@@ -196,14 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resetRegisterForm();
     });
 
-    function toggleSubmitButton() {
-        const allCriteriaMet = Object.values(passwordCriteria).every(criteria => criteria.met);
-        isPasswordValid = allCriteriaMet;
-        registerSubmitBtn.disabled = !(isFirstNameValid && isLastNameValid && isEmailValid && isPasswordValid && isPasswordMatch);
-    }
-
-    toggleSubmitButton();
-
     // Handle form submission
     document.getElementById('registerForm').addEventListener('submit', function(event) {
         event.preventDefault();

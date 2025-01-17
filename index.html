@@ -162,53 +162,69 @@
         </div>
     </nav>
 
-    <!-- Register Modal -->
-    <div class="modal fade" id="registerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Register</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="registerForm" action="php/register.php" method="POST" onsubmit="return validateForm(event)">
-                        <div class="mb-3">
-                            <label for="studentId" class="form-label">Student ID</label>
-                            <input type="text" class="form-control" id="studentId" name="studentId" required 
-                                   pattern="[0-9]+" title="Please enter a valid student ID (numbers only)">
-                            <div id="studentIdError" class="form-text"></div>
+    <!-- Registration Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Register</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="studentId" class="form-label">Student ID</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="studentId" 
+                               name="studentId" 
+                               pattern="[0-9]{8}" 
+                               placeholder="Enter your 8-digit Student ID"
+                               maxlength="8"
+                               required>
+                        <div id="studentIdError" class="form-text"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text">+63</span>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="contactNumber" 
+                                   name="contactNumber" 
+                                   pattern="[9][0-9]{9}" 
+                                   placeholder="9XXXXXXXXX" 
+                                   maxlength="10"
+                                   required>
                         </div>
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" required>
-                            <div id="firstNameError" class="form-text"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" required>
-                            <div id="lastNameError" class="form-text"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required 
-                                   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                            <div id="emailError" class="form-text"></div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" required>
-                            <div id="passwordError" class="text-danger"></div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Register</button>
-                    </form>
-                </div>            
+                        <div class="form-text">Enter your 10-digit number starting with 9</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1">

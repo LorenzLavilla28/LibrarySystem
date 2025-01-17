@@ -46,6 +46,10 @@
         <div class="content-panel">
             <h2 class="text-center mb-4">Create Account</h2>
             <form id="adminRegisterForm">
+                <div class="form-group mb-3" id="studentIdField" style="display: none;">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" class="form-control" id="studentId" name="studentId" required>
+                </div>
                 <div class="mb-3">
                     <label for="firstName" class="form-label">First Name</label>
                     <input type="text" class="form-control" id="firstName" name="firstName" required>
@@ -84,6 +88,29 @@
         </div>
     </div>
     <script>
+        document.getElementById('role').addEventListener('change', function () {
+            const studentIdField = document.getElementById('studentIdField');
+            if (this.value === 'Student') {
+                studentIdField.style.display = 'block';
+                document.getElementById('studentId').required = true;
+            } else {
+                studentIdField.style.display = 'none';
+                document.getElementById('studentId').required = false;
+            }
+        });
+        document.getElementById('role').addEventListener('change', function () {
+            const studentIdField = document.getElementById('studentIdField');
+            const studentIdInput = document.getElementById('studentId');
+
+            if (this.value === 'Student') {
+                studentIdField.style.display = 'block';
+                studentIdInput.required = true;
+            } else {
+                studentIdField.style.display = 'none';
+                studentIdInput.required = false;
+                studentIdInput.value = '';
+            }
+        });
         document.addEventListener('DOMContentLoaded', function () {
             const userRole = sessionStorage.getItem('role');
             if (userRole !== 'superadmin') {

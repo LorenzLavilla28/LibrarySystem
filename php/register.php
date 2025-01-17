@@ -1,20 +1,20 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
 header('Content-Type: application/json');
+
 function generateGUID() {
     $bytes = random_bytes(10);
-    $uniqueId = bin2hex($bytes);
-    return $uniqueId;
+    return bin2hex($bytes);
 }
-$response = array(
-    'status' => 'error',
-    'message' => 'Invalid request'
-);
+
+$response = array('status' => 'error', 'message' => 'Invalid request');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        // Check if email already exists
         $email = $_POST['email'];
+        $contactNumber = $_POST['contactNumber'];
+
+        // Check if email exists
         $checkEmail = "SELECT Email FROM UserProfile WHERE Email = ?";
         $checkStmt = $conn->prepare($checkEmail);
         $checkStmt->bind_param("s", $email);
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        // Check if Student ID already exists
+        // Check if Student ID exists
         $studentId = $_POST['studentId'];
         $checkStudentId = "SELECT StudentId FROM UserProfile WHERE StudentId = ?";
         $checkStmt = $conn->prepare($checkStudentId);
@@ -45,26 +45,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $firstName = $_POST['firstName'];
         $lastName = $_POST['lastName'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $role = 'Student';
 
-        $sql = "INSERT INTO UserProfile (UserId, FirstName, LastName, Email, Password, Role, StudentId) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // Updated SQL to include ContactNumber
+        $sql = "INSERT INTO UserProfile (UserId, FirstName, LastName, Email, Password, Role, StudentId, ContactNumber) 
+                VALUES (?, ?, ?, ?, ?, 'Student', ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssss", $userId, $firstName, $lastName, $email, $password, $role, $studentId);
-
+        $stmt->bind_param("sssssss", $userId, $firstName, $lastName, $email, $password, $studentId, $contactNumber);
+        
         if ($stmt->execute()) {
             $response['status'] = 'success';
             $response['message'] = 'Registration successful!';
         } else {
-            $response['message'] = 'Error: ' . $stmt->error;
+            throw new Exception($stmt->error);
         }
 
-        $stmt->close();
     } catch (Exception $e) {
         $response['message'] = 'Error: ' . $e->getMessage();
     }
-    
-    $conn->close();
 }
 
 echo json_encode($response);

@@ -1,16 +1,19 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-session_start();
-
 header('Content-Type: application/json');
 $response = array('status' => 'error', 'message' => 'Unknown error occurred');
 
 try {
-    if (!isset($_SESSION['user_id'])) {
-        throw new Exception('User not logged in');
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new Exception('Invalid request method');
     }
 
-    $userId = $_SESSION['user_id'];
+    $data = json_decode(file_get_contents('php://input'), true);
+    if (!isset($data['userId'])) {
+        throw new Exception('User ID not provided');
+    }
+
+    $userId = $data['userId'];
     
     $sql = "SELECT FirstName, LastName, Email FROM UserProfile WHERE UserId = ?";
     $stmt = $conn->prepare($sql);

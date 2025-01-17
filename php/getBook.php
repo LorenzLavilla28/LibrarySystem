@@ -7,7 +7,7 @@ $response = array();
 if (isset($_GET['id'])) {
     try {
         $bookId = $_GET['id'];
-        $sql = "SELECT BookId, BookTitle, Author, ISBN, Quantity FROM Books WHERE BookId = ?";
+        $sql = "SELECT BookId, BookTitle, Author, Accession, Quantity FROM Books WHERE BookId = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $bookId);
         $stmt->execute();

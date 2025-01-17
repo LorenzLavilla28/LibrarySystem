@@ -1,54 +1,40 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-session_start();
 header('Content-Type: application/json');
 
-$response = array(
-    'status' => 'error',
-    'message' => 'Invalid request'
-);
+$response = array('status' => 'error', 'message' => 'Invalid request');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        if (!isset($_SESSION['user_id'])) {
-            throw new Exception('User not logged in');
+        $userId = $_POST['userId'] ?? '';
+        $firstName = $_POST['firstName'] ?? '';
+        $lastName = $_POST['lastName'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $oldPassword = $_POST['oldPassword'] ?? '';
+        $newPassword = $_POST['newPassword'] ?? '';
+        
+        if (empty($userId)) {
+            throw new Exception('User ID is required');
         }
 
-        $userId = $_SESSION['user_id'];
-        $oldPassword = $_POST['oldPassword'];
-        $newPassword = $_POST['newPassword'];
-        $newEmail = $_POST['email'];
         $changes = false;
-        $stmt = null;
-
-        // Check if email is being changed
-        if ($newEmail !== $_SESSION['email']) {
-            // Check if new email already exists
-            $checkEmail = "SELECT Email FROM UserProfile WHERE Email = ? AND UserId != ?";
-            $stmt = $conn->prepare($checkEmail);
-            $stmt->bind_param("ss", $newEmail, $userId);
-            $stmt->execute();
-            if ($stmt->get_result()->num_rows > 0) {
-                throw new Exception('Email already exists');
-            }
-
-            // Update email
-            $sql = "UPDATE UserProfile SET Email = ? WHERE UserId = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $newEmail, $userId);
-            if ($stmt->execute()) {
-                $_SESSION['email'] = $newEmail;
-                $changes = true;
-            }
+        
+        // Update basic info
+        $sql = "UPDATE UserProfile SET FirstName = ?, LastName = ?, Email = ? WHERE UserId = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $firstName, $lastName, $email, $userId);
+        
+        if ($stmt->execute()) {
+            $changes = true;
         }
 
-        // Handle password update if provided
+        // Update password if provided
         if (!empty($newPassword)) {
             if (empty($oldPassword)) {
-                throw new Exception('Current password is required to set new password');
+                throw new Exception('Current password is required');
             }
 
-            // Check old password
+            // Verify old password
             $checkPass = "SELECT Password FROM UserProfile WHERE UserId = ?";
             $stmt = $conn->prepare($checkPass);
             $stmt->bind_param("s", $userId);
@@ -61,10 +47,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // Update password
-            $password = password_hash($newPassword, PASSWORD_DEFAULT);
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $sql = "UPDATE UserProfile SET Password = ? WHERE UserId = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $password, $userId);
+            $stmt->bind_param("ss", $hashedPassword, $userId);
             if ($stmt->execute()) {
                 $changes = true;
             }
@@ -78,14 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $response['message'] = 'No changes made';
         }
 
-        if ($stmt) {
-            $stmt->close();
-        }
     } catch (Exception $e) {
-        $response['message'] = 'Error: ' . $e->getMessage();
+        $response['message'] = $e->getMessage();
     }
-    
-    $conn->close();
 }
 
 echo json_encode($response);

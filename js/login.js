@@ -23,72 +23,62 @@ document.addEventListener('DOMContentLoaded', function () {
         isEmailValid = emailPattern.test(email);
     });
 
-    // Password validation
-    document.getElementById('loginPassword').addEventListener('input', function () {
-        const password = this.value;
-        isPasswordValid = password.length >= 6;
-    });
 
     // Form submission
     document.getElementById('loginForm').addEventListener('submit', function (event) {
         event.preventDefault();
-
-        if (!isEmailValid || !isPasswordValid) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Please check your email and password'
-            });
-            return;
-        }
-
+    
         const formData = new FormData(this);
-
+        const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+    
         fetch('php/login.php', {
             method: 'POST',
             body: formData
         })
-            .then(response => response.text())
-            .then(text => {
-                // Remove any extra output before JSON
-                const jsonStart = text.indexOf('{');
-                const jsonText = text.substring(jsonStart);
-
-                const data = JSON.parse(jsonText);
-
-                if (data.status === 'success') {
-                    sessionStorage.setItem('firstName', data.user.firstName);
-                    sessionStorage.setItem('role', data.user.role);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: data.message
-                    }).then(() => {
-                        loginModal.hide();
-                        if (data.user.role === 'Admin') {
-                            window.location.href = 'dashboard.html';
-                        } else if ((data.user.role === 'Student')){
-                            window.location.href = 'student.html';
-                        }else  {
-                            window.location.href = 'admin.html';
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        .then(response => response.text())
+        .then(text => {
+            const jsonStart = text.indexOf('{');
+            const jsonText = text.substring(jsonStart);
+            const data = JSON.parse(jsonText);
+    
+            if (data.status === 'success') {
+                // Store user data
+                sessionStorage.setItem('user_id', data.user.id);
+                sessionStorage.setItem('firstName', data.user.firstName);
+                sessionStorage.setItem('lastName', data.user.lastName);
+                sessionStorage.setItem('email', data.user.email);
+                sessionStorage.setItem('role', data.user.role);
+            
+                // Show success message and redirect
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message
+                }).then(() => {
+                    loginModal.hide();
+                    // Check role for redirection
+                    if (data.user.role === 'superadmin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'landing.html';
+                    }
+                });
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'An error occurred during login'
+                    text: data.message
                 });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred during login'
             });
+        });
     });
     window.logout = function () {
         fetch('php/logout.php')

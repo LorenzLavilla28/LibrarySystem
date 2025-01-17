@@ -8,7 +8,7 @@ function generateGUID() {
 }
 
 function checkISBNExists($conn, $isbn) {
-    $sql = "SELECT ISBN FROM Books WHERE ISBN = ?";
+    $sql = "SELECT Accession FROM Books WHERE Accession = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $isbn);
     $stmt->execute();
@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $bookId = generateGUID();
         $title = $_POST['title'];
         $author = $_POST['author'];
-        $isbn = trim($_POST['isbn']); // Clean ISBN input
+        $isbn = trim($_POST['accession']); // Clean ISBN input
         $quantity = $_POST['quantity'];
         $available = $quantity; // Set Available equal to Quantity
 
@@ -36,12 +36,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Check if ISBN already exists
         if (checkISBNExists($conn, $isbn)) {
             $response['status'] = 'error';
-            $response['message'] = 'ISBN already exists in database';
+            $response['message'] = 'Accession already exists in database';
             echo json_encode($response);
             exit;
         }
 
-        $sql = "INSERT INTO Books (BookId, BookTitle, Author, ISBN, Quantity, Available) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Books (BookId, BookTitle, Author, Accession, Quantity, Available) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ssssii", $bookId, $title, $author, $isbn, $quantity, $available);
 

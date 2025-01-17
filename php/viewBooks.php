@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 $response = array();
 
 try {
-    $sql = "SELECT BookId, BookTitle, Author, ISBN, Quantity,Available FROM Books ORDER BY BookTitle";
+    $sql = "SELECT BookId, BookTitle, Author, Accession, Quantity,Available,IsFeatured FROM Books ORDER BY BookTitle";
     $result = $conn->query($sql);
     
     $books = array();

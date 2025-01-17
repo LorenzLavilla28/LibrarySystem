@@ -181,18 +181,18 @@ ystem/student.html
                 </div>
 
                 <!-- Borrow Books Panel -->
-                <div id="borrow-panel" class="panel active">
+                <div id="borrow-panel" class="panel">
                     <h2 class="mb-4">Available Books</h2>
                     <div class="content-panel">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Author</th>
-                                        <th>ISBN</th>
-                                        <th>Available</th>
-                                        <th>Actions</th>
+                                        <th style="width: 30%">Title</th>
+                                        <th style="width: 20%">Author</th>
+                                        <th style="width: 15%">Accession Number</th>
+                                        <th style="width: 10%">Available</th>
+                                        <th style="width: 15%">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="availableBooksTableBody">
@@ -342,7 +342,7 @@ ystem/student.html
                         <tr>
                             <td>${book.BookTitle}</td>
                             <td>${book.Author}</td>
-                            <td>${book.ISBN}</td>
+                            <td>${book.Accession}</td>
                             <td>${book.Available}</td>
                             <td>
                                 <button class="btn btn-primary btn-sm ${!isAvailable ? 'd-none' : ''}" 

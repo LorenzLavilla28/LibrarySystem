@@ -1,60 +1,47 @@
 <?php
 include __DIR__ . '/../config/databaseConnection.php';
-
 header('Content-Type: application/json');
-$response = array(
-    'status' => 'error',
-    'message' => 'Invalid request'
-);
+
+$response = array('status' => 'error', 'message' => 'Invalid request');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
     try {
-        if (empty($_POST['email']) || empty($_POST['password'])) {
-            $response['message'] = 'Email and password are required';
-            echo json_encode($response);
-            exit;
-        }
-
-        $email = trim($_POST['email']);
-        $password = $_POST['password'];
-
-        $sql = "SELECT UserId, FirstName, LastName, Email, Password,Role FROM UserProfile WHERE Email = ? LIMIT 1";
+        // Updated query to use UserProfile table
+        $sql = "SELECT * FROM UserProfile WHERE Email = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        if ($row = $result->fetch_assoc()) {
-            if (password_verify($password, $row['Password'])) {
-                session_start();
-                $_SESSION['user_id'] = $row['UserId'];
-                $_SESSION['first_name'] = $row['FirstName'];
-                $_SESSION['last_name'] = $row['LastName'];
-                $_SESSION['email'] = $row['Email'];
-                $_SESSION['role'] = $row['Role'];
-                
-                $response['status'] = 'success';
-                $response['message'] = 'Login successful!';
-                $response['user'] = array(
-                    'firstName' => $row['FirstName'],
-                    'lastName' => $row['LastName'],
-                    'role' => $row['Role']
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            
+            // Verify password
+            if (password_verify($password, $user['Password'])) {
+                $response = array(
+                    'status' => 'success',
+                    'message' => 'Login successful',
+                    'user' => array(
+                        'id' => $user['UserId'],
+                        'firstName' => $user['FirstName'],
+                        'lastName' => $user['LastName'],
+                        'email' => $user['Email'],
+                        'role' => $user['Role']
+                    )
                 );
             } else {
-                $response['message'] = 'Invalid email or password';
+                $response['message'] = 'Invalid password';
             }
         } else {
-            $response['message'] = 'Invalid email or password';
+            $response['message'] = 'Email not found';
         }
-
-        $stmt->close();
     } catch (Exception $e) {
-        $response['message'] = 'An error occurred during login';
+        $response['message'] = 'Error: ' . $e->getMessage();
     }
-    
-    $conn->close();
 }
 
 echo json_encode($response);
-exit;
 ?>
