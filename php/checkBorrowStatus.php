@@ -29,7 +29,8 @@ try {
             JOIN Books b ON b.BookId = bh.BookBorrowed
             WHERE bh.BorrowerFirstName = ? 
             AND bh.BorrowerLastName = ? 
-            AND bh.BookBorrowed = ? ";
+            AND bh.BookBorrowed = ?
+            AND bh.Status != 'Returned'";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $user['FirstName'], $user['LastName'], $data['bookId']);
