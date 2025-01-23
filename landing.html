@@ -8,6 +8,126 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        .featured-books-container {
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+            padding: 80px 0;
+            overflow: hidden;
+        }
+
+        .featured-bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            opacity: 0.1;
+        }
+
+        .featured-header {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .featured-underline {
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            margin: 1rem auto;
+            position: relative;
+        }
+
+        .featured-underline::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            to {
+                left: 100%;
+            }
+        }
+
+        #featuredBooksContainer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Book Card Animations */
+        .book-card {
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .featured-books-container {
+                padding: 60px 0;
+            }
+
+            .featured-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        .scroll-top-btn,
+        .scroll-down-btn {
+            position: fixed;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-top-btn {
+            bottom: 70px;
+        }
+
+        .scroll-down-btn {
+            bottom: 20px;
+        }
+
+        .scroll-top-btn:hover,
+        .scroll-down-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .scroll-top-btn.show,
+        .scroll-down-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         .feature-card {
             border: none;
             overflow: hidden;
@@ -639,11 +759,32 @@
     </div>
 
     <div id="featured-books" class="featured-books-container">
-        <div class="container">
-            <h2 class="text-center mb-4">Featured Books</h2>
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center"
-                id="featuredBooksContainer">
-                <!-- Books will be loaded here -->
+        <!-- Add wave animation background -->
+        <div class="wave-background">
+            <div class="wave wave1"></div>
+            <div class="wave wave2"></div>
+            <div class="wave wave3"></div>
+        </div>
+
+        <!-- Add animated particles -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+
+        <div class="container position-relative">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold text-white mb-3">
+                    Featured Books
+                    <div class="section-underline mx-auto"></div>
+                </h2>
+                <p class="lead text-white-50">Discover our carefully curated collection</p>
+            </div>
+
+            <!-- Existing featured books content -->
+            <div id="featuredBooksContainer" class="row row-cols-1 row-cols-md-3 g-4">
+                <!-- Books will be loaded here dynamically -->
             </div>
         </div>
     </div>
@@ -744,10 +885,49 @@
             </div>
         </div>
     </div>
-
+    <button id="scrollToTop" class="scroll-top-btn">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+    <button id="scrollDown" class="scroll-down-btn">
+        <i class="bi bi-arrow-down"></i>
+    </button>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        const scrollBtn = document.getElementById('scrollToTop');
+        const scrollDownBtn = document.getElementById('scrollDown');
+        const featuredSection = document.querySelector('.featured-books-container');
+        const aboutSection = document.querySelector('#about-us');
+
+        window.addEventListener('scroll', () => {
+            const featuredRect = featuredSection.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+
+            // Show up arrow if scrolled past 300px
+            if (window.pageYOffset > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+
+            // Show down arrow only when in featured books section
+            if (featuredRect.top <= windowHeight / 2 && featuredRect.bottom >= windowHeight / 2) {
+                scrollDownBtn.classList.add('show');
+            } else {
+                scrollDownBtn.classList.remove('show');
+            }
+        });
+
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        scrollDownBtn.addEventListener('click', () => {
+            aboutSection.scrollIntoView({ behavior: 'smooth' });
+        });
         document.addEventListener('DOMContentLoaded', function () {
             // Check session
             const firstName = sessionStorage.getItem('firstName');
@@ -832,9 +1012,13 @@
                 });
         }
         function scrollToFeatured() {
-            document.getElementById('featured-books').scrollIntoView({
-                behavior: 'smooth'
-            });
+            const featuredSection = document.getElementById('featured-books');
+            if (featuredSection) {
+                featuredSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
 
         // Update showFeaturedBooks function
@@ -903,6 +1087,73 @@
                 behavior: 'smooth'
             });
         }
+    </script>
+    <script>
+        // Add this to the head section or at the end of body
+        document.addEventListener('DOMContentLoaded', function () {
+            // Disable right-click
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
+
+            // Disable keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                // Disable F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable Ctrl+Shift+I and Ctrl+Shift+J
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console
+            setInterval(function () {
+                console.clear();
+                console.log = function () { }
+                console.error = function () { }
+                console.warn = function () { }
+            }, 100);
+
+            // Disable developer tools
+            function detectDevTools(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    window.location.reload();
+                }
+            }
+
+            if (window.attachEvent) {
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    detectDevTools();
+                    window.attachEvent('onresize', detectDevTools);
+                    window.attachEvent('onmousemove', detectDevTools);
+                    window.attachEvent('onfocus', detectDevTools);
+                    window.attachEvent('onblur', detectDevTools);
+                } else {
+                    setTimeout(argument.callee, 0);
+                }
+            } else {
+                window.addEventListener('load', detectDevTools);
+                window.addEventListener('resize', detectDevTools);
+                window.addEventListener('mousemove', detectDevTools);
+                window.addEventListener('focus', detectDevTools);
+                window.addEventListener('blur', detectDevTools);
+            }
+        });
     </script>
 </body>
 

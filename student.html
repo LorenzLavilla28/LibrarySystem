@@ -240,7 +240,6 @@ ystem/student.html
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <!-- Existing book details -->
                                 <div class="mb-3">
                                     <label class="fw-bold">Book Title:</label>
                                     <p id="confirmBookTitle"></p>
@@ -262,7 +261,6 @@ ystem/student.html
                                     <p id="confirmDateReturn"></p>
                                 </div>
 
-                                <!-- New remarks section -->
                                 <div class="alert alert-warning mt-3">
                                     <h6 class="alert-heading mb-2"><i class="bi bi-exclamation-triangle"></i> Important
                                         Remarks:</h6>
@@ -519,7 +517,7 @@ ystem/student.html
                     const month = String(dateBorrowed.getMonth() + 1).padStart(2, '0'); // Months are zero-based
                     const day = String(dateBorrowed.getDate()).padStart(2, '0');
                     const mysqlDateBorrowed = `${year}-${month}-${day}`;
-                    
+
                     const year2 = dateReturn.getFullYear();
                     const month2 = String(dateReturn.getMonth() + 1).padStart(2, '0'); // Months are zero-based
                     const day2 = String(dateReturn.getDate()).padStart(2, '0');
@@ -613,8 +611,73 @@ ystem/student.html
                 }
             });
         }
+    </script>
+    <script>
+        // Add this to the head section or at the end of body
+        document.addEventListener('DOMContentLoaded', function () {
+            // Disable right-click
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+            });
 
+            // Disable keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                // Disable F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
 
+                // Disable Ctrl+Shift+I and Ctrl+Shift+J
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Clear console
+            setInterval(function () {
+                console.clear();
+                console.log = function () { }
+                console.error = function () { }
+                console.warn = function () { }
+            }, 100);
+
+            // Disable developer tools
+            function detectDevTools(allow) {
+                if (isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if (isNaN(start) || isNaN(end) || end - start > allow) {
+                    window.location.reload();
+                }
+            }
+
+            if (window.attachEvent) {
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    detectDevTools();
+                    window.attachEvent('onresize', detectDevTools);
+                    window.attachEvent('onmousemove', detectDevTools);
+                    window.attachEvent('onfocus', detectDevTools);
+                    window.attachEvent('onblur', detectDevTools);
+                } else {
+                    setTimeout(argument.callee, 0);
+                }
+            } else {
+                window.addEventListener('load', detectDevTools);
+                window.addEventListener('resize', detectDevTools);
+                window.addEventListener('mousemove', detectDevTools);
+                window.addEventListener('focus', detectDevTools);
+                window.addEventListener('blur', detectDevTools);
+            }
+        });
     </script>
 </body>
 

@@ -132,8 +132,6 @@
                 }
 
                 const formData = new FormData(this);
-                // Let role come from select element instead of hardcoding
-                console.log('Role:', formData.get('role')); // Debug log
 
                 fetch('php/createAccountBySuperAdmin.php', {
                     method: 'POST',
