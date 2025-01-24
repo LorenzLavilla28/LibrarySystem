@@ -44,7 +44,8 @@
 <body>
     <div class="main-content">
         <div class="content-panel">
-            <h2 class="text-center mb-4">Create Account</h2>
+            <h2 class="text-center mb-4">ACCOUNT ADMIN</h2>
+            <h5 class="text-center mb-4">Create Account</h5>
             <form id="adminRegisterForm">
                 <div class="form-group mb-3" id="studentIdField" style="display: none;">
                     <label for="studentId">Student ID</label>
@@ -187,7 +188,72 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable right-click
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+        
+            // Disable keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Disable F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
+        
+                // Disable Ctrl+Shift+I and Ctrl+Shift+J
+                if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+                    e.preventDefault();
+                    return false;
+                }
+        
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        
+            // Clear console
+            setInterval(function(){
+                console.clear();
+                console.log = function() {}
+                console.error = function() {}
+                console.warn = function() {}
+            }, 100);
+        
+            // Disable developer tools
+            function detectDevTools(allow) {
+                if(isNaN(+allow)) allow = 100;
+                var start = +new Date();
+                debugger;
+                var end = +new Date();
+                if(isNaN(start) || isNaN(end) || end - start > allow) {
+                    window.location.reload();
+                }
+            }
+            
+            if(window.attachEvent) {
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    detectDevTools();
+                    window.attachEvent('onresize', detectDevTools);
+                    window.attachEvent('onmousemove', detectDevTools);
+                    window.attachEvent('onfocus', detectDevTools);
+                    window.attachEvent('onblur', detectDevTools);
+                } else {
+                    setTimeout(argument.callee, 0);
+                }
+            } else {
+                window.addEventListener('load', detectDevTools);
+                window.addEventListener('resize', detectDevTools);
+                window.addEventListener('mousemove', detectDevTools);
+                window.addEventListener('focus', detectDevTools);
+                window.addEventListener('blur', detectDevTools);
+            }
+        });
+        </script>
 </body>
 
 </html>

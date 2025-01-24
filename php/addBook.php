@@ -28,12 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $author = $_POST['author'];
         $isbn = trim($_POST['accession']); // Clean ISBN input
         $quantity = $_POST['quantity'];
+        $category = $_POST['category'];
+        $description = $_POST['description'];
         $available = $quantity; // Set Available equal to Quantity
 
-        // Debug ISBN value
-        error_log("Received ISBN: " . $isbn);
-
-        // Check if ISBN already exists
+        // Check if Accession already exists
         if (checkISBNExists($conn, $isbn)) {
             $response['status'] = 'error';
             $response['message'] = 'Accession already exists in database';
@@ -41,9 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        $sql = "INSERT INTO Books (BookId, BookTitle, Author, Accession, Quantity, Available) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Books (BookId, BookTitle, Author, Accession, Quantity, Available,Category,Description) VALUES (?, ?, ?, ?, ?, ?,?,?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssii", $bookId, $title, $author, $isbn, $quantity, $available);
+        $stmt->bind_param("ssssiiss", $bookId, $title, $author, $isbn, $quantity, $available,$category,$description);
 
         if ($stmt->execute()) {
             $response['status'] = 'success';

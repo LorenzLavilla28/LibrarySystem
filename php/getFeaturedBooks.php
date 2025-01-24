@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 $response = array('status' => 'error', 'message' => 'Invalid request');
 
 try {
-    $sql = "SELECT BookId, BookTitle, Author, Accession, Available FROM Books WHERE IsFeatured = 1";
+    $sql = "SELECT BookId, BookTitle, Author, Accession AS AccessionNumber, Available , Category, Description FROM Books WHERE IsFeatured = 1";
     $result = $conn->query($sql);
     
     if ($result) {

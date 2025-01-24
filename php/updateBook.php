@@ -8,29 +8,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         // Validate required fields
         if (empty($_POST['bookId']) || empty($_POST['title']) || 
-            empty($_POST['author']) || empty($_POST['quantity'])) {
+            empty($_POST['author']) ||empty($_POST['category'])) {
             throw new Exception('All fields are required');
         }
 
         $bookId = $_POST['bookId'];
         $title = $_POST['title'];
         $author = $_POST['author'];
-        $quantity = (int)$_POST['quantity'];
+        $newQuantity = (int)$_POST['quantity'];
+        $category = $_POST['category'];
+        $description = $_POST['description'];
 
-        // Validate quantity
-        if ($quantity < 1 || $quantity > 100) {
-            throw new Exception('Quantity must be between 1 and 100');
+        // Get current book details
+        $getCurrentBook = "SELECT Quantity, Available FROM Books WHERE BookId = ?";
+        $stmt = $conn->prepare($getCurrentBook);
+        $stmt->bind_param("s", $bookId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $currentBook = $result->fetch_assoc();
+
+        if (!$currentBook) {
+            throw new Exception('Book not found');
         }
 
-        $sql = "UPDATE Books SET BookTitle = ?, Author = ?, Quantity = ? WHERE BookId = ?";
+        // Calculate difference and new available count
+        $quantityDifference = $newQuantity - $currentBook['Quantity'];
+        $newAvailable = $currentBook['Available'] + $quantityDifference;
+
+        if ($newAvailable < 0) {
+            throw new Exception('Cannot reduce quantity below borrowed books count');
+        }
+
+        // Update query with both quantity and available
+        $sql = "UPDATE Books 
+                SET BookTitle = ?, 
+                    Author = ?, 
+                    Quantity = ?, 
+                    Available = ?,
+                    Category = ?,
+                    Description = ?
+                WHERE BookId = ?";
+                
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $title, $author, $quantity, $bookId);
+        $stmt->bind_param("ssiisss", $title, $author, $newQuantity, $newAvailable, $category, $description,$bookId);
 
         if ($stmt->execute()) {
             $response['status'] = 'success';
             $response['message'] = 'Book updated successfully';
         } else {
-            throw new Exception('Error updating book: ' . $stmt->error);
+            throw new Exception("Failed to update book: " . $stmt->error);
         }
 
     } catch (Exception $e) {

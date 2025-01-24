@@ -56,16 +56,6 @@
             }
         }
 
-        #featuredBooksContainer {
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Book Card Animations */
-        .book-card {
-            animation: fadeInUp 0.6s ease-out backwards;
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -572,14 +562,10 @@
         }
 
         #featuredBooksContainer {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: start;
-            gap: 1.5rem;
-            margin: 2rem 0;
-            /* Added margin */
-            min-height: 70vh;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
         }
 
         .col {
@@ -641,28 +627,93 @@
         }
 
         .book-card {
-            background: rgba(255, 255, 255, 0.95);
+            perspective: 1500px;
+            /* Increased perspective for better 3D effect */
+            height: 350px;
+            width: 100%;
+        }
+
+        .book-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .book-card-front,
+        .book-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            /* Safari */
+            backface-visibility: hidden;
             border-radius: 15px;
             padding: 20px;
-            text-align: center;
-            transition: transform 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .book-card:hover {
-            transform: translateY(-5px);
+        .book-card-front {
+            background: white;
+            z-index: 2;
+            /* Ensure front is above back */
         }
 
-        .book-title,
-        .book-author {
-            color: #2c3e50;
+        .book-card-back {
+            background: #f8f9fa;
+            transform: rotateY(180deg);
+        }
+
+        .book-card:hover .book-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .book-title {
             font-size: 1.2rem;
-            margin-bottom: 1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
             font-weight: 600;
             overflow: hidden;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+        }
+
+        .book-author {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .back-content {
+            height: 100%;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .back-content h6 {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .back-content p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .back-content::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .back-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        .back-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
 
         .availability-icon {
@@ -962,31 +1013,93 @@
                     container.innerHTML = '';
 
                     if (data.status === 'success' && Array.isArray(data.books)) {
+                        if (data.books.length === 0) {
+                            // Show empty state
+                            container.innerHTML = `
+                            <div class="empty-state text-center col-12">
+                                <i class="bi bi-book"></i>
+                                <h3>No Featured Books Yet</h3>
+                                <p>Check back soon for our featured book collection!</p>
+                            </div>
+                        `;
+                            return;
+                        }
+
                         data.books.forEach(book => {
+                            const isAvailable = parseInt(book.Available) > 0;
+                            const availableIcon = isAvailable
+                                ? '<i class="bi bi-check-circle-fill text-success availability-icon"></i>'
+                                : '<i class="bi bi-x-circle-fill text-danger availability-icon"></i>';
+                            const availableText = isAvailable
+                                ? '<span class="text-success">Available</span>'
+                                : '<span class="text-danger">Unavailable</span>';
+
                             container.insertAdjacentHTML('beforeend', `
-                                <div class="col-md-6">
-                                    <div class="featured-book shadow-sm">
-                                        <h5>${book.BookTitle}</h5>
-                                        <p>Author: ${book.Author}</p>
-                                        <p>Available: ${book.Available}</p>
+                            <div class="col">
+                                <div class="book-card">
+                                    <div class="book-card-inner">
+                                        <div class="book-card-front">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Title</small>
+                                                <div class="book-title">${book.BookTitle || 'No title'}</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <small class="text-muted">Author</small>
+                                                <div class="book-author">${book.Author || 'Unknown author'}</div>
+                                            </div>
+                                            <div class="text-center mt-auto">
+                                                ${availableIcon}
+                                                <div class="mt-2">${availableText}</div>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-back">
+                                            <div class="back-content">
+                                                <h6>Accession Number</h6>
+                                                <p>${book.AccessionNumber || 'N/A'}</p>
+                                                <h6>Category</h6>
+                                                <p>${book.Category || 'N/A'}</p>
+                                                <h6>Description</h6>
+                                                <p>${book.Description || 'No description available.'}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            `);
+                            </div>
+                        `);
                         });
+                    } else {
+                        // Handle error or no data
+                        container.innerHTML = `
+                        <div class="error-state text-center col-12">
+                            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                            <h3>Error loading featured books</h3>
+                            <p>Please try again later.</p>
+                        </div>
+                    `;
                     }
-
-                    const modal = new bootstrap.Modal(document.getElementById('featuredBooksModal'));
-                    modal.show();
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to load featured books'
-                    });
+                    const container = document.getElementById('featuredBooksContainer');
+                    container.innerHTML = `
+                    <div class="error-state text-center col-12">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        <h3>Error loading featured books</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
                 });
         }
+
+        // Load featured books when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            showFeaturedBooks();
+        });
+
+        // Load featured books when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            showFeaturedBooks();
+        });
 
         function showAboutUs() {
             const modal = new bootstrap.Modal(document.getElementById('aboutUsModal'));
@@ -1026,7 +1139,7 @@
             fetch('php/getFeaturedBooks.php')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Featured books data:', data); // Debug log
+                    console.log('Fetch successful:', data); // Temporary log
                     const container = document.getElementById('featuredBooksContainer');
                     container.innerHTML = '';
 
@@ -1034,16 +1147,16 @@
                         if (data.books.length === 0) {
                             // Show empty state
                             container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="bi bi-book"></i>
-                            <h3>No Featured Books Yet</h3>
-                            <p>Check back soon for our featured book collection!</p>
-                        </div>
-                    `;
+                            <div class="empty-state text-center col-12">
+                                <i class="bi bi-book"></i>
+                                <h3>No Featured Books Yet</h3>
+                                <p>Check back soon for our featured book collection!</p>
+                            </div>
+                        `;
                             return;
                         }
+
                         data.books.forEach(book => {
-                            console.log('Book data:', book); // Debug log for each book
                             const isAvailable = parseInt(book.Available) > 0;
                             const availableIcon = isAvailable
                                 ? '<i class="bi bi-check-circle-fill text-success availability-icon"></i>'
@@ -1053,28 +1166,59 @@
                                 : '<span class="text-danger">Unavailable</span>';
 
                             container.insertAdjacentHTML('beforeend', `
-                        <div class="col">
-                            <div class="book-card">
-                                <div class="mb-2">
-                                    <small class="text-muted">Title</small>
-                                    <div class="book-title">${book.BookTitle || 'No title'}</div>
-                                </div>
-                                <div class="mb-3">
-                                    <small class="text-muted">Author</small>
-                                    <div class="book-author">${book.Author || 'Unknown author'}</div>
-                                </div>
-                                <div class="text-center">
-                                    ${availableIcon}
-                                    <div class="mt-2">${availableText}</div>
+                            <div class="col">
+                                <div class="book-card">
+                                    <div class="book-card-inner">
+                                        <div class="book-card-front">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Title</small>
+                                                <div class="book-title">${book.BookTitle || 'No title'}</div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <small class="text-muted">Author</small>
+                                                <div class="book-author">${book.Author || 'Unknown author'}</div>
+                                            </div>
+                                            <div class="text-center mt-auto">
+                                                ${availableIcon}
+                                                <div class="mt-2">${availableText}</div>
+                                            </div>
+                                        </div>
+                                        <div class="book-card-back">
+                                            <div class="back-content">
+                                                <h6>Accession Number</h6>
+                                                <p>${book.AccessionNumber || 'N/A'}</p>
+                                                <h6>Category</h6>
+                                                <p>${book.Category || 'N/A'}</p>
+                                                <h6>Description</h6>
+                                                <p>${book.Description || 'No description available.'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `);
+                        `);
                         });
+                    } else {
+                        // Handle error or no data
+                        container.innerHTML = `
+                        <div class="error-state text-center col-12">
+                            <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                            <h3>Error loading featured books</h3>
+                            <p>Please try again later.</p>
+                        </div>
+                    `;
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Fetch error:', error);
+                    const container = document.getElementById('featuredBooksContainer');
+                    container.innerHTML = `
+                    <div class="error-state text-center col-12">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        <h3>Error loading featured books</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
                 });
         }
 
@@ -1089,7 +1233,6 @@
         }
     </script>
     <script>
-        // Add this to the head section or at the end of body
         document.addEventListener('DOMContentLoaded', function () {
             // Disable right-click
             document.addEventListener('contextmenu', function (e) {
