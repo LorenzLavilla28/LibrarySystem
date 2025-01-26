@@ -139,11 +139,9 @@
                     body: formData
                 })
                     .then(response => {
-                        console.log('Response:', response); // Debug log
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Data:', data); // Debug log
                         if (data.status === 'success') {
                             Swal.fire({
                                 icon: 'success',

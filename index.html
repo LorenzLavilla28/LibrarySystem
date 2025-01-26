@@ -200,10 +200,9 @@
                             <!-- Left Column -->
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="studentId" class="form-label">Student ID</label>
-                                    <input type="text" class="form-control" id="studentId" name="studentId"
-                                        pattern="[0-9]{8}" placeholder="Enter your 8-digit Student ID" maxlength="8"
-                                        required>
+                                    <label for="studentId" class="form-label">Student LRN</label>
+                                    <input type="number" class="form-control" id="studentId" name="studentId" 
+                                        placeholder="12-digit LRN" oninput="if(this.value.length > 12) this.value=this.value.slice(0,12)" required>
                                     <div id="studentIdError" class="form-text"></div>
                                 </div>
                                 <div class="mb-3">
@@ -216,8 +215,8 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="grade" class="form-label">Grade</label>
-                                    <input type="number" class="form-control" id="grade" name="grade" min="7" max="12"
-                                        required>
+                                    <input type="number" class="form-control" id="grade" name="grade" min="11" max="12"
+                                        oninput="if(this.value.length > 2) this.value=this.value.slice(0,2)" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="section" class="form-label">Section</label>

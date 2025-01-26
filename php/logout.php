@@ -13,7 +13,7 @@ try {
     }
 
     // Handle logout based on user role
-    if ($_SESSION['user']['role'] === 'Admin' && $_SESSION['user']['role'] === 'superadmin') {
+    if ($_SESSION['user']['role'] === 'Admin' || $_SESSION['user']['role'] === 'superadmin') {
         // Just destroy session for admin users
         session_destroy();
         echo json_encode([

@@ -1139,7 +1139,6 @@
             fetch('php/getFeaturedBooks.php')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Fetch successful:', data); // Temporary log
                     const container = document.getElementById('featuredBooksContainer');
                     container.innerHTML = '';
 
