@@ -15,7 +15,7 @@ try {
                 bh.Status
             FROM BorrowHistory bh
             LEFT JOIN Books b ON bh.BookBorrowed = b.BookId
-            WHERE bh.Status = 'Returned'
+            WHERE bh.Status <> 'Returned'
             ORDER BY bh.Status ASC";
             
     $result = $conn->query($sql);
